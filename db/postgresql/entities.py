@@ -10,4 +10,4 @@ class Users(SQLModel, table=True):
     cedula : str 
     password : str
     email : EmailStr = Field(unique=True)
-    edad : int 
+    age : int 

@@ -6,7 +6,7 @@ class UserCreate(SQLModel):
     cedula : str 
     password : str
     email : EmailStr
-    edad : int 
+    age : int 
 
 
 class UserLogin(SQLModel):
@@ -19,7 +19,7 @@ class UserResponse(SQLModel):
     name : str 
     cedula : str 
     email : EmailStr
-    edad : int 
+    age : int 
 
 
 class Token(SQLModel):
