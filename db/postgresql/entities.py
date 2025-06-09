@@ -9,5 +9,5 @@ class Users(SQLModel, table=True):
     name : str 
     cedula : str 
     password : str
-    email : EmailStr
+    email : EmailStr = Field(unique=True)
     edad : int 

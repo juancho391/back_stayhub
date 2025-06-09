@@ -42,6 +42,9 @@ class UserService:
     
 
     def register(self, new_user: UserCreate):
+        user = self.user_repository.search_user_by_email(email=new_user.email)
+        if user:
+            raise UserRegisterError()
         new_user.password = pwd_context.hash(new_user.password)
         return self.user_repository.insert_user(new_user=new_user)
         

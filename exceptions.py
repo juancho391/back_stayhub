@@ -9,7 +9,7 @@ class UserLoginError(UserError):
         super().__init__(status_code, detail)
 
 class UserRegisterError(UserError):
-    def __init__(self, mensaje: str = "El correo ya existe"):
+    def __init__(self, mensaje: str = "Ya existe un usuario registrado con este email"):
         super().__init__(status_code = 401, detail=mensaje)
 
 # Excepcion de autenticacion de usuario
