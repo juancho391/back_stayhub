@@ -47,6 +47,7 @@ class UserService:
     
 
     def register(self, new_user: UserCreate):
+        new_user.password = pwd_context.hash(new_user.password)
         return self.user_repository.insert_user(new_user=new_user)
         
 
