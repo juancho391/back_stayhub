@@ -1,9 +1,9 @@
-from ..exceptions import UserLoginError, AuthenticationError
+from ..exceptions import UserLoginError, AuthenticationError, UserRegisterError
 from .repository import user_repository_dependency
 from datetime import datetime, timedelta, timezone
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from .models import Token, TokenData
+from .models import Token, TokenData, UserCreate, UserLogin
 from dotenv import load_dotenv
 from typing import Annotated
 from fastapi import Depends
@@ -19,7 +19,6 @@ ACCES_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/token")
 
-from .models import UserLogin
 class UserService:
     def __init__(self, user_repository: user_repository_dependency):
         self.user_repository = user_repository
@@ -46,6 +45,11 @@ class UserService:
         token = self.create_acces_token(email=user_db.email, user_id=user_db.id, expires_delta=timedelta(minutes=ACCES_TOKEN_EXPIRE_MINUTES))
         return Token(access_token=token, token_type="bearer")
     
+
+    def register(self, new_user: UserCreate):
+        return self.user_repository.insert_user(new_user=new_user)
+        
+
 
 
 

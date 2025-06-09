@@ -1,6 +1,13 @@
 from sqlmodel import SQLModel 
 from pydantic import EmailStr
 
+class UserCreate(SQLModel):
+    name : str 
+    cedula : str 
+    password : str
+    email : EmailStr
+    edad : int 
+
 
 class UserLogin(SQLModel):
     email : EmailStr
