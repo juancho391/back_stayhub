@@ -31,16 +31,11 @@ class UserService:
             "exp" : datetime.now(timezone.utc) + expires_delta
         }
         return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
-
-
-    #funcion para verificar la contraseña    
-    def verify_password(self,password:str, password_hash:str):
-        return pwd_context.verify(password, password_hash)
     
     #funcion para loguear el usuario
     def login(self, user:UserLogin):
         user_db = self.user_repository.search_user_by_email(email=user.email)
-        if not user_db or not self.verify_password(password=user.password, password_hash=user_db.password):
+        if not user_db or not pwd_context.verify(user.password,user_db.password):
             raise UserLoginError(status_code=404, detail="user credentials invalid")
         token = self.create_acces_token(email=user_db.email, user_id=user_db.id, expires_delta=timedelta(minutes=ACCES_TOKEN_EXPIRE_MINUTES))
         return Token(access_token=token, token_type="bearer")
