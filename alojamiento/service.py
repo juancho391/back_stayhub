@@ -17,7 +17,14 @@ class LodgingService:
             lodgings['propietario'] = user_repository.search_user_id(lodgings['propietario']).model_dump()
         return list_lodgings
     
-    
+    def create_lodging(self, lodging):
+        try:
+            self.lodging_repository.insert_lodging(lodging)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
 def get_lodging_service(lodging_repository:lodging_repository_dependency, session: session_dependency):
     return LodgingService(lodging_repository=lodging_repository, session=session)
 

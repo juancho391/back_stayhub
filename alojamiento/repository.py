@@ -10,6 +10,9 @@ class LodgingRepository:
         lodgins = self.collection.find({}).limit(limit)
         return lodgins
     
+    def insert_lodging(self, lodging):
+        format_js = lodging.model_dump()
+        self.collection.insert_one(format_js)
 
 def get_lodging_repository(mongodb:mongo_db_dependency):
     return LodgingRepository(mongodb=mongodb)
