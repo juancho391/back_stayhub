@@ -3,7 +3,7 @@ from ..db.postgresql.entities import Users
 from typing import Annotated
 from sqlmodel import select
 from fastapi import Depends
-from .models import UserCreate
+from .models import UserCreate, UserResponse
 from ..db.postgresql.entities import Users
 
 class UserRepository:
@@ -13,6 +13,10 @@ class UserRepository:
     # Buscar el usuario por email
     def search_user_by_email(self, email: str):
         return self.session.exec(select(Users).where(Users.email == email)).first()
+
+    # Buscar por el id del usuario
+    def search_user_id(self, id:int)->UserResponse:
+        return self.session.exec(select(Users).where(Users.id == id)).first()
 
     # Obtener todas las contraseñas
     def get_passwords(self)-> list[str]:
