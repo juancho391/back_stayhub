@@ -7,11 +7,6 @@ from fastapi.responses import JSONResponse
 booking_router = APIRouter(tags=["reservas"])
 
 
-@booking_router.get("/{user_id}", response_model=list[Booking])
-def get_user_bookings(booking_service: booking_service_dependency, user_id: int):
-    return booking_service.get_user_bookings(user_id=user_id)
-
-
 @booking_router.post("/")
 def create_booking(booking_service: booking_service_dependency, booking: BookingCreate):
     booking_service.create_booking(booking)
@@ -27,3 +22,9 @@ def get_bookings_by_alojamiento_from_today(
     return booking_service.get_bookings_by_alojamientoid_from_today(
         id_alojamiento=alojamiento_id
     )
+
+
+@booking_router.delete("/{booking_id}")
+def delete_booking(booking_service: booking_service_dependency, booking_id: str):
+    booking_service.delete_booking(booking_id=booking_id)
+    return JSONResponse(content={"message": "Reserva eliminada con exito"})
