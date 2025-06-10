@@ -1,4 +1,5 @@
 from ..db.mongodb.conexion import mongo_db_dependency
+from .models import LodgingResponse
 from typing import Annotated
 from fastapi import Depends
 class LodgingRepository:
@@ -6,12 +7,13 @@ class LodgingRepository:
         self.bd = mongodb
         self.collection = self.bd['alojamiento']
 
-    def get_lodgins(self, limit=10):
+    # Funcion para obtener la lista de alojamientos
+    def get_lodgins(self, limit=10)->list[LodgingResponse]:
         lodgins = self.collection.find({}).limit(limit)
         return lodgins
     
 
-def get_lodging_repository(mongodb:mongo_db_dependency):
+def get_lodging_repository(mongodb:mongo_db_dependency)->LodgingRepository:
     return LodgingRepository(mongodb=mongodb)
 
 lodging_repository_dependency = Annotated[LodgingRepository,Depends(get_lodging_repository)]

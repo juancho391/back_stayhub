@@ -9,11 +9,9 @@ class LodgingResponse(SQLModel):
     price_night:int
     images:list[str]
     city:str
-    propietario:UserResponse
+    propietario:int
     contact:str
     characteristics:list[str]
     nearby_areas:list[str]
-
-    
-
+    type:str
     
