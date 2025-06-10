@@ -11,7 +11,9 @@ class LodgingService:
         self.session = session
     
     def obtain_lodgings(self):
-        list_lodgings = self.lodging_repository.get_lodgins()
+        list_lodgings = list(self.lodging_repository.get_lodgins())
+        for lodging in list_lodgings:
+            lodging["id"] = str(lodging["_id"])
         return list_lodgings
     
     

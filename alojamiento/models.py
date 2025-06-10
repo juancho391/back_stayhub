@@ -2,6 +2,7 @@ from sqlmodel import SQLModel
 from ..users.models import UserResponse
 
 class LodgingResponse(SQLModel):
+    id:str
     title:str
     description:str
     no_rooms:int
