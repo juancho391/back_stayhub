@@ -1,9 +1,15 @@
-from ..exceptions import UserLoginError, AuthenticationError, UserRegisterError
-from .repository import user_repository_dependency
+from ..exceptions import (
+    UserLoginError,
+    AuthenticationError,
+    UserRegisterError,
+    UserNotFoundError,
+)
+from .models import Token, TokenData, UserCreate, UserLogin, UserProfile
 from datetime import datetime, timedelta, timezone
+from .repository import user_repository_dependency
+from ..reservas.repository import booking_repository_dependency
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from .models import Token, TokenData, UserCreate, UserLogin
 from dotenv import load_dotenv
 from typing import Annotated
 from fastapi import Depends
@@ -19,27 +25,35 @@ ACCES_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/token")
 
-class UserService:
-    def __init__(self, user_repository: user_repository_dependency):
-        self.user_repository = user_repository
 
-    
-    def create_acces_token(self, email:str, user_id : int, expires_delta: timedelta):
+class UserService:
+    def __init__(
+        self,
+        user_repository: user_repository_dependency,
+        booking_repository: booking_repository_dependency,
+    ):
+        self.user_repository = user_repository
+        self.booking_repository = booking_repository
+
+    def create_acces_token(self, email: str, user_id: int, expires_delta: timedelta):
         encode = {
-            "sub" : email,
+            "sub": email,
             "id": user_id,
-            "exp" : datetime.now(timezone.utc) + expires_delta
+            "exp": datetime.now(timezone.utc) + expires_delta,
         }
         return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
-    
-    #funcion para loguear el usuario
-    def login(self, user:UserLogin):
+
+    # funcion para loguear el usuario
+    def login(self, user: UserLogin):
         user_db = self.user_repository.search_user_by_email(email=user.email)
-        if not user_db or not pwd_context.verify(user.password,user_db.password):
+        if not user_db or not pwd_context.verify(user.password, user_db.password):
             raise UserLoginError(status_code=404, detail="user credentials invalid")
-        token = self.create_acces_token(email=user_db.email, user_id=user_db.id, expires_delta=timedelta(minutes=ACCES_TOKEN_EXPIRE_MINUTES))
+        token = self.create_acces_token(
+            email=user_db.email,
+            user_id=user_db.id,
+            expires_delta=timedelta(minutes=ACCES_TOKEN_EXPIRE_MINUTES),
+        )
         return Token(access_token=token, token_type="bearer")
-    
 
     def register(self, new_user: UserCreate):
         user = self.user_repository.search_user_by_email(email=new_user.email)
@@ -47,24 +61,41 @@ class UserService:
             raise UserRegisterError()
         new_user.password = pwd_context.hash(new_user.password)
         return self.user_repository.insert_user(new_user=new_user)
-        
+
+    def get_user_profile(self, user_id: int):
+        user = self.user_repository.search_user_id(id=user_id)
+        if not user:
+            raise UserNotFoundError()
+        user_bookings = self.booking_repository.get_user_bookings_by_user_id(
+            user_id=user.id
+        )
+        if not user_bookings:
+            return user
+        user = UserProfile(**user.model_dump())
+        user.bookings = user_bookings
+        return user
 
 
+def get_user_service(
+    user_repository: user_repository_dependency,
+    booking_repository: booking_repository_dependency,
+):
+    return UserService(
+        user_repository=user_repository, booking_repository=booking_repository
+    )
 
 
-def get_user_service(user_repository: user_repository_dependency):
-    return UserService(user_repository=user_repository)
-
-#Funcion para verificar el token 
-def verify_token(token:str):
+# Funcion para verificar el token
+def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
         id_user = payload.get("id")
         return TokenData(user_id=id_user)
     except PyJWTError:
         raise AuthenticationError()
-    
-#Funcion para solicitar token en las requests 
+
+
+# Funcion para solicitar token en las requests
 def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     return verify_token(token=token)
 
