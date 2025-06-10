@@ -19,11 +19,8 @@ class LodgingService:
     
     def obtain_lodgings(self)->list[LodgingResponse]:
         list_lodgings = list(self.lodging_repository.get_lodgins())
-        user_repository = UserRepository(session=self.session)
-        for lodgings in list_lodgings:
-            lodgings["propietario"] = user_repository.search_user_id(
-                lodgings["propietario"]
-            ).model_dump()
+        for lodging in list_lodgings:
+            lodging["id"] = str(lodging["_id"])
         return list_lodgings
     
     def delete_loging(self, lodging_id: str)->bool:
