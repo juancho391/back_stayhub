@@ -1,9 +1,9 @@
 from .repository import booking_repository_dependency
-from fastapi import Depends
+from ..exceptions import BookingError, BookingNotFoundError
+from datetime import datetime
 from typing import Annotated
 from .models import Booking
-from ..exceptions import BookingError
-import pprint
+from fastapi import Depends
 
 
 class ReservaService:
@@ -15,6 +15,9 @@ class ReservaService:
         return bookings
 
     def create_booking(self, new_booking: Booking):
+        current_date = datetime.today()
+        if new_booking.fecha_reserva < current_date.date():
+            raise BookingError()
         bookings = self.get_bookings_by_alojamientoid_from_today(
             new_booking.id_alojamiento
         )
@@ -30,9 +33,15 @@ class ReservaService:
         return self.booking_repository.create_booking(new_booking)
 
     def get_bookings_by_alojamientoid_from_today(self, id_alojamiento: str):
-        return self.booking_repository.get_booking_by_alojamientoid_from_today(
+        return self.booking_repository.get_bookings_by_alojamientoid_from_today(
             id_alojamiento
         )
+
+    def delete_booking(self, booking_id: str):
+        result = self.booking_repository.delete_booking(booking_id=booking_id)
+        if result.deleted_count > 0:
+            return True
+        raise BookingNotFoundError()
 
 
 def get_booking_service(booking_repository: booking_repository_dependency):

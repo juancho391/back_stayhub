@@ -1,30 +1,36 @@
-from sqlmodel import SQLModel 
+from sqlmodel import SQLModel
 from pydantic import EmailStr
+from ..reservas.models import Booking
+
 
 class UserCreate(SQLModel):
-    name : str 
-    cedula : str 
-    password : str
-    email : EmailStr
-    age : int 
+    name: str
+    cedula: str
+    password: str
+    email: EmailStr
+    age: int
 
 
 class UserLogin(SQLModel):
-    email : EmailStr
-    password : str
+    email: EmailStr
+    password: str
 
 
 class UserResponse(SQLModel):
-    id : int 
-    name : str 
-    cedula : str 
-    email : EmailStr
-    age : int 
+    id: int
+    name: str
+    cedula: str
+    email: EmailStr
+    age: int
+
+
+class UserProfile(UserResponse):
+    bookings: list[Booking] | None = []
 
 
 class Token(SQLModel):
     access_token: str
-    token_type : str 
+    token_type: str
 
 
 class TokenData(SQLModel):

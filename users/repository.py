@@ -6,6 +6,7 @@ from fastapi import Depends
 from .models import UserCreate, UserResponse
 from ..db.postgresql.entities import Users
 
+
 class UserRepository:
     def __init__(self, session: session_dependency):
         self.session = session
@@ -15,11 +16,11 @@ class UserRepository:
         return self.session.exec(select(Users).where(Users.email == email)).first()
 
     # Buscar por el id del usuario
-    def search_user_id(self, id:int)->UserResponse:
+    def search_user_id(self, id: int) -> UserResponse:
         return self.session.exec(select(Users).where(Users.id == id)).first()
 
     # Obtener todas las contraseñas
-    def get_passwords(self)-> list[str]:
+    def get_passwords(self) -> list[str]:
         return self.session.exec(select(Users.password)).all()
 
     # Ingresar un nuevo usuario en la base de datos
@@ -29,6 +30,8 @@ class UserRepository:
         self.session.commit()
         self.session.refresh(new_user)
         return new_user
+
+
 def get_user_repository(session: session_dependency):
     return UserRepository(session=session)
 

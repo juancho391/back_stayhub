@@ -3,13 +3,14 @@ from bson import ObjectId
 from .models import LodgingResponse
 from typing import Annotated
 from fastapi import Depends
+
+
 class LodgingRepository:
     def __init__(self, mongodb: mongo_db_dependency):
         self.bd = mongodb
-        self.collection = self.bd['alojamiento']
+        self.collection = self.bd["alojamiento"]
 
-    # Funcion para obtener la lista de alojamientos
-    def get_lodgins(self, limit=10)->list[LodgingResponse]:
+    def get_lodgins(self, limit=10):
         lodgins = self.collection.find({}).limit(limit)
         return lodgins
     
@@ -21,7 +22,11 @@ class LodgingRepository:
         return self.collection.insert_one(format_js)
     
 
-def get_lodging_repository(mongodb:mongo_db_dependency)->LodgingRepository:
+
+def get_lodging_repository(mongodb: mongo_db_dependency):
     return LodgingRepository(mongodb=mongodb)
 
-lodging_repository_dependency = Annotated[LodgingRepository,Depends(get_lodging_repository)]
+
+lodging_repository_dependency = Annotated[
+    LodgingRepository, Depends(get_lodging_repository)
+]
