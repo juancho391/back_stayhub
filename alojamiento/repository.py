@@ -6,8 +6,8 @@ class LodgingRepository:
         self.bd = mongodb
         self.collection = self.bd['alojamiento']
 
-    def get_lodgins(self):
-        lodgins = self.collection.find({})
+    def get_lodgins(self, limit=10):
+        lodgins = self.collection.find({}).limit(limit)
         return lodgins
     
 

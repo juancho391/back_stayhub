@@ -1,0 +1,19 @@
+from sqlmodel import SQLModel
+from ..users.models import UserResponse
+
+class LodgingResponse(SQLModel):
+    title:str
+    description:str
+    no_rooms:int
+    no_bathrooms:int
+    price_night:int
+    images:list[str]
+    city:str
+    propietario:UserResponse
+    contact:str
+    characteristics:list[str]
+    nearby_areas:list[str]
+
+    
+
+    
