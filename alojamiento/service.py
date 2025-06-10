@@ -17,6 +17,8 @@ class LodgingService:
             lodgings['propietario'] = user_repository.search_user_id(lodgings['propietario']).model_dump()
         return list_lodgings
     
+    def delete_loging(self, lodging_id: int):
+        return self.lodging_repository.delete_lodging(lodging_id=lodging_id)
     
 def get_lodging_service(lodging_repository:lodging_repository_dependency, session: session_dependency):
     return LodgingService(lodging_repository=lodging_repository, session=session)

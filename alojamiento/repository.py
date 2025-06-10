@@ -10,6 +10,8 @@ class LodgingRepository:
         lodgins = self.collection.find({}).limit(limit)
         return lodgins
     
+    def delete_lodging(self, lodging_id: int):
+        return self.collection.delete_one({"_id": lodging_id})
 
 def get_lodging_repository(mongodb:mongo_db_dependency):
     return LodgingRepository(mongodb=mongodb)
