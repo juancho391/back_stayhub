@@ -15,6 +15,11 @@ class UserRegisterError(UserError):
         super().__init__(status_code=401, detail=message)
 
 
+class UserNotFoundError(UserError):
+    def __init__(self, message: str = "No se pudo encontrar el usuario"):
+        super().__init__(status_code=404, detail=message)
+
+
 # Excepcion de autenticacion de usuario
 class AuthenticationError(HTTPException):
     def __init__(self, message: str = "No se pudo validar el usuario"):
@@ -25,4 +30,9 @@ class BookingError(HTTPException):
     def __init__(
         self, status_code=400, detail="No se puede realizar la reserva en esas fechas"
     ):
+        super().__init__(status_code, detail)
+
+
+class BookingNotFoundError(HTTPException):
+    def __init__(self, status_code=404, detail="No se pudo encontrar la reserva"):
         super().__init__(status_code, detail)
