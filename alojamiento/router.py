@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .models import LodgingResponse
+from .models import LodgingResponse,LodgingCreate
 from typing import Annotated
 from fastapi import Depends
 from .service import lodging_service_dependency
@@ -11,5 +11,5 @@ def obtain_all_lodging(lodging_service:lodging_service_dependency):
     return lodging_service.obtain_lodgings()
 
 @lodging_router.post("",response_model=LodgingResponse)
-def create_lodging(lodging_service:lodging_service_dependency,lodging:LodgingResponse):
+def create_lodging(lodging_service:lodging_service_dependency,lodging:LodgingCreate):
     return lodging_service.create_lodging(lodging=lodging)

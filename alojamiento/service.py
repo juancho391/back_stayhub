@@ -3,6 +3,7 @@ from fastapi import Depends
 from .repository import lodging_repository_dependency
 from ..users.repository import UserRepository
 from ..db.postgresql.conexion import session_dependency 
+from .models import LodgingResponse
 import pprint as pp
 
 class LodgingService:
@@ -10,17 +11,18 @@ class LodgingService:
         self.lodging_repository = lodging_repository
         self.session = session
     
-    def obtain_lodgings(self):
+    def obtain_lodgings(self)->list[LodgingResponse]:
         list_lodgings = list(self.lodging_repository.get_lodgins())
-        user_repository = UserRepository(session=self.session)
-        for lodgings in list_lodgings:
-            lodgings['propietario'] = user_repository.search_user_id(lodgings['propietario']).model_dump()
+        for lodging in list_lodgings:
+            lodging["id"] = str(lodging["_id"])
         return list_lodgings
     
-    def create_lodging(self, lodging):
+    def create_lodging(self, lodging)->LodgingResponse | bool:
         try:
-            self.lodging_repository.insert_lodging(lodging)
-            return True
+            result = self.lodging_repository.insert_lodging(lodging)
+            data = lodging.model_dump()
+            data['id'] = str(result.inserted_id)
+            return data
         except Exception as e:
             print(e)
             return False
