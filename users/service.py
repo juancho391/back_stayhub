@@ -8,6 +8,8 @@ from .models import Token, TokenData, UserCreate, UserLogin, UserProfile
 from datetime import datetime, timedelta, timezone
 from .repository import user_repository_dependency
 from ..reservas.repository import booking_repository_dependency
+from ..alojamiento.repository import lodging_repository_dependency
+from ..utils.mapLodging import mapLodging
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from dotenv import load_dotenv
@@ -16,6 +18,7 @@ from fastapi import Depends
 from jwt import PyJWTError
 import jwt
 import os
+import pprint as pp
 
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -31,9 +34,11 @@ class UserService:
         self,
         user_repository: user_repository_dependency,
         booking_repository: booking_repository_dependency,
+        lodging_repository: lodging_repository_dependency
     ):
         self.user_repository = user_repository
         self.booking_repository = booking_repository
+        self.lodging_repository = lodging_repository
 
     def create_acces_token(self, email: str, user_id: int, expires_delta: timedelta):
         encode = {
@@ -69,19 +74,30 @@ class UserService:
         user_bookings = self.booking_repository.get_user_bookings_by_user_id(
             user_id=user.id
         )
-        if not user_bookings:
+        user_lodgings = self.lodging_repository.lodging_for_user(user_id=user.id)
+        user_lodgings = mapLodging(user_lodgings)
+        if not user_bookings or not user_lodgings :
+            user = UserProfile(**user.model_dump())
+            if not user_bookings:
+                print("user_lodgings")
+                user.lodgings = user_lodgings
+            elif not user_lodgings:
+                print("user_bookings")
+                user.bookings = user_bookings
             return user
         user = UserProfile(**user.model_dump())
         user.bookings = user_bookings
+        user.lodgings = user_lodgings
         return user
 
 
 def get_user_service(
     user_repository: user_repository_dependency,
     booking_repository: booking_repository_dependency,
+    lodging_repository: lodging_repository_dependency
 ):
     return UserService(
-        user_repository=user_repository, booking_repository=booking_repository
+        user_repository=user_repository, booking_repository=booking_repository, lodging_repository=lodging_repository
     )
 
 

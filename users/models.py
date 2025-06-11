@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel
 from pydantic import EmailStr
 from ..reservas.models import Booking
+from ..alojamiento.models import LodgingResponse
 
 
 class UserCreate(SQLModel):
@@ -26,6 +27,7 @@ class UserResponse(SQLModel):
 
 class UserProfile(UserResponse):
     bookings: list[Booking] | None = []
+    lodgings: list[LodgingResponse] | None = []
 
 
 class Token(SQLModel):

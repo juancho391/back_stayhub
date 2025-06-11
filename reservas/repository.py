@@ -25,7 +25,7 @@ class BookingsRepository:
         booking_created = self.booking.insert_one(new_booking)
         return booking_created
 
-    def get_user_bookings_by_user_id(self, user_id: int):
+    def     get_user_bookings_by_user_id(self, user_id: int):
         bookings_cursor = self.booking.find({"id_usuario": user_id})
         bookings = mapBooking(bookings_cursor)
         return bookings
