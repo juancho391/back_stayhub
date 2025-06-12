@@ -27,9 +27,13 @@ class LodgingRepository:
     #Buscar el alojamiento por propietario
     def lodging_for_user(self, user_id: int)->list[LodgingResponse]:
         return self.collection.find({"propietario": user_id}).limit(10)
+    
+    def get_lodging(self, title: str):
+        return self.collection.find({"title": title})
 
 def get_lodging_repository(mongodb: mongo_db_dependency):
     return LodgingRepository(mongodb=mongodb)
+
 
 
 lodging_repository_dependency = Annotated[

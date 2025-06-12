@@ -17,3 +17,8 @@ def delete_lodging(lodging_service:lodging_service_dependency, lodging_id:str):
 @lodging_router.post("",response_model=LodgingResponse)
 def create_lodging(lodging_service:lodging_service_dependency,lodging:LodgingCreate):
     return lodging_service.create_lodging(lodging=lodging)
+
+
+@lodging_router.get("/{title_post}", response_model=LodgingResponse)
+def get_lodging(lodging_service:lodging_service_dependency,title_post:str):
+    return lodging_service.get_lodging(title_post)

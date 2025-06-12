@@ -18,13 +18,13 @@ class LodgingResponse(SQLModel):
 class LodgingCreate(SQLModel):
     title:str
     description:str
-    no_rooms:int
-    no_bathrooms:int
+    no_rooms:Optional[int] = 1
+    no_bathrooms:Optional[int] = 1
     price_night:int
-    images:list[str]
+    images:Optional[list[str]] = []
     city:str
     propietario:int
-    contact:str
+    contact:Optional[str] = "xxxxxxxx"
     characteristics:list[str]
     nearby_areas:list[str]
     type:str

@@ -5,6 +5,7 @@ from .repository import lodging_repository_dependency
 from ..users.repository import UserRepository
 from ..db.postgresql.conexion import session_dependency 
 from .models import LodgingResponse
+from ..utils.mapLodging import mapLodging
 import pprint as pp
 
 
@@ -41,6 +42,23 @@ class LodgingService:
         except Exception as e:
             print(e)
             return False
+        
+    def get_lodging(self, title:str)->LodgingResponse | bool:
+        try:
+            print("Resultado")
+            result = self.lodging_repository.get_lodging(title=title)
+
+            lodging_data = list(result)
+            print(lodging_data)
+            lodging_data_list = mapLodging(lodging_data)
+            print(lodging_data_list)
+            return lodging_data_list[0]
+        
+        except Exception as e:
+            print("Obtuvo un error")
+            print(e)
+            return False
+
 
 def get_lodging_service(lodging_repository:lodging_repository_dependency, session: session_dependency):
     return LodgingService(lodging_repository=lodging_repository, session=session)
